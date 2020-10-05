@@ -100,41 +100,22 @@ public class AuthRestAPIs {
 
 		return new ResponseEntity<>(new ResponseMessage("User registered successfully!"), HttpStatus.OK);
 	}
-/*
+
 	@PostMapping("/update/{id}")
-	public ResponseEntity<?> updateUser(@Valid @RequestBody SignUpForm signUpRequest,@PathVariable("id") String id) {
+	public ResponseEntity<?> updateUser(@Valid @RequestBody SignUpForm signUpRequest,@PathVariable("id") Long id) {
 
 		// Creating user's account
-		User user = userRepository.findById(Long.valueOf(id)).orElse(null);
+		User user = userRepository.findById(id).orElse(null);
 		user.setUsername(signUpRequest.getUsername());
-		user.setName(signUpRequest.getUsername());
-				new User(signUpRequest.getName(), , signUpRequest.getEmail(),
-				encoder.encode(signUpRequest.getPassword()));
+		user.setName(signUpRequest.getName());
+		user.setEmail(signUpRequest.getEmail());
+		user.setPassword(encoder.encode(signUpRequest.getPassword()));
 
-		Set<String> strRoles = signUpRequest.getRole();
-		Set<Role> roles = new HashSet<>();
-
-		strRoles.forEach(role -> {
-			switch (role) {
-				case "admin":
-					Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
-							.orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find."));
-					roles.add(adminRole);
-
-					break;
-				default:
-					Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-							.orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find."));
-					roles.add(userRole);
-			}
-		});
-
-		user.setRoles(roles);
 		userRepository.save(user);
 
-		return new ResponseEntity<>(new ResponseMessage("User registered successfully!"), HttpStatus.OK);
+		return new ResponseEntity<>(new ResponseMessage("User updated successfully!"), HttpStatus.OK);
 	}
-*/
+
 	@RequestMapping(value="/profile/{username}", method = RequestMethod.GET)
 	public User getUser(@PathVariable("username") String un) {
 		return userRepository.findByUsername(un).orElse(null);
