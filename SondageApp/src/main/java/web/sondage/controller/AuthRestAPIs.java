@@ -108,7 +108,6 @@ public class AuthRestAPIs {
 		User user = userRepository.findById(id).orElse(null);
 		user.setUsername(signUpRequest.getUsername());
 		user.setName(signUpRequest.getName());
-		user.setEmail(signUpRequest.getEmail());
 		user.setPassword(encoder.encode(signUpRequest.getPassword()));
 
 		userRepository.save(user);
