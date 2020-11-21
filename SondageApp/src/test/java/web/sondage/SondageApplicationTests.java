@@ -1,4 +1,4 @@
-package web.sondage;
+package esiea.ds.sondage;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
