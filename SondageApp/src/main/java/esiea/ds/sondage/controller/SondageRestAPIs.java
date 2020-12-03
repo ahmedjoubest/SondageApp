@@ -24,18 +24,6 @@ public class SondageRestAPIs {
 	@Autowired
 	LieuRepository lieuRepository;
 
-	@GetMapping("/api/test/user")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-	public String userAccess() {
-		return ">>> User Contents!";
-	}
-
-	@GetMapping("/api/test/admin")
-	@PreAuthorize("hasRole('ADMIN')")
-	public String adminAccess() {
-		return ">>> Admin Contents";
-	}
-
 	@RequestMapping(value="/api/sondage/find")
 	public List<SondageForm> listSondages(){
 		List<SondageForm> sondages = new ArrayList<>();

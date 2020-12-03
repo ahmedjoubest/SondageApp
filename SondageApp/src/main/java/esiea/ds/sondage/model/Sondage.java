@@ -19,6 +19,10 @@ public class Sondage {
 	@JsonIgnore
 	private Set<Lieu> m_Lieu;
 
+	@OneToMany(mappedBy = "sondage", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private Set<Vote> votes;
+
 	public Sondage() {
 	}
 
@@ -66,4 +70,22 @@ public class Sondage {
 
 	}
 
+	public Set<Vote> getVotes() {
+		return votes;
+	}
+
+	public void setVotes(Set<Vote> votes) {
+		this.votes = votes;
+	}
+
+	@Override
+	public String toString() {
+		return "Sondage{" +
+				"id=" + id +
+				", titre='" + titre + '\'' +
+				", description='" + description + '\'' +
+				", m_Date=" + m_Date +
+				", m_Lieu=" + m_Lieu +
+				'}';
+	}
 }
