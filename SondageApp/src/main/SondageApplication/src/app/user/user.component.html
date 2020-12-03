@@ -1,0 +1,89 @@
+<div class="row">
+  <div class="col-md-8">
+    <h4>Liste Sondage</h4>
+  </div>
+</div>
+
+<div *ngIf="isVote" class="alert alert-success">
+  Votre vote a été enregitré avec succès!
+</div>
+
+<div class="row">
+  <table>
+    <tr>
+      <th>Nom</th>
+      <th>Description</th>
+      <th>Lieux</th>
+      <th>Dates</th>
+      <th>Actions</th>
+    </tr>
+    <tr *ngFor="let sondage of sondages">
+      <td>{{sondage.titre}}</td>
+      <td>{{sondage.description}}</td>
+      <td>
+        <p *ngFor="let lieu of sondage.lieux">
+          {{lieu}}
+        </p>
+      </td>
+      <td>
+        <p *ngFor="let date of sondage.dates">
+          {{date}}
+        </p>
+      </td>
+      <td>
+        <button class="btn btn-default btn-rounded btn-sm" data-toggle="modal" data-target="#BlockComp"
+                (click)="voteSondage(sondage)">
+          <span class="fa fa-bullhorn"></span></button>
+      </td>
+    </tr>
+  </table>
+</div>
+
+
+<!-- MODALS -->
+<div id="BlockComp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="taskEditModalHead"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+          class="sr-only">Fermer</span></button>
+        <h4 class="modal-title" id="taskEditModalHead">{{model_title}}</h4>
+      </div>
+      <form class="form-horizontal" [formGroup]="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+        <div class="modal-body">
+          <div class="form-group col-md-12">
+            <label for="description">Description</label><br>
+            <label>
+              {{form.value.description}}
+            </label>
+          </div>
+          <div formArrayName="lieux">
+            <label for="lieux">Choisir Lieu</label>
+            <select class="form-control" [formControl]="selectedLieu" required >
+              <option *ngFor="let item of lieux.controls" [value]="item.value.lieu">{{item.value.lieu}}</option>
+            </select>
+          </div><br>
+          <div formArrayName="dates">
+            <label for="dates">Choisir Date</label>
+            <select class="form-control" [formControl]="selectedDate" required>
+              <option *ngFor="let item of dates.controls" [value]="item.value.date">{{item.value.date}}</option>
+            </select>
+          </div><br>
+          <div class="form-group">
+            <div *ngIf="f.submitted && isVoteFailed" class="alert alert-warning">
+              Vote sur le sondage sondage a échoué!<br/>{{errorMessage}}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- END MODALS -->
+
+
