@@ -33,6 +33,24 @@ public class VoteRestAPIs {
 	@Autowired
 	LieuRepository lieuRepository;
 
+	@RequestMapping(value="/api/vote/find/{username}", method = RequestMethod.GET)
+	public List<VoteForm> listVotes(@PathVariable String username){
+		List<VoteForm> votes = new ArrayList<>();
+
+		voteRepository.findAll().forEach(vote -> {
+			if (vote.getUser().getUsername().equals(username)){
+				VoteForm v = new VoteForm();
+				v.setDate(vote.getDate());
+				v.setLieu(vote.getLieu());
+				v.setSondage(vote.getSondage().getId());
+				v.setSondageTitre(vote.getSondage().getTitre());
+
+				votes.add(v);
+			}
+		});
+		return votes;
+	}
+
 	@RequestMapping(value="/api/sondage/vote", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('USER')")
 	public void voteSondage(@RequestBody VoteForm vote) {

@@ -11,29 +11,27 @@
 <div class="row">
   <table>
     <tr>
-      <th>Nom</th>
-      <th>Description</th>
-      <th>Lieux</th>
-      <th>Dates</th>
+      <th>Sondage</th>
+      <th>Lieu Choisi</th>
+      <th>Date Choisi</th>
       <th>Actions</th>
     </tr>
-    <tr *ngFor="let sondage of sondages">
-      <td>{{sondage.titre}}</td>
-      <td>{{sondage.description}}</td>
+    <tr *ngFor="let vote of votes">
+      <td>{{vote.sondageTitre}}</td>
       <td>
-        <p *ngFor="let lieu of sondage.lieux">
-          {{lieu}}
+        <p>
+          {{vote.lieu}}
         </p>
       </td>
       <td>
-        <p *ngFor="let date of sondage.dates">
-          {{date}}
+        <p>
+          {{vote.date}}
         </p>
       </td>
       <td>
         <button class="btn btn-default btn-rounded btn-sm" data-toggle="modal" data-target="#BlockComp"
-                (click)="voteSondage(sondage)">
-          <span class="fa fa-bullhorn"></span></button>
+                (click)="voteSondage(vote)">
+          <span class="fa fa-pencil"></span></button>
       </td>
     </tr>
   </table>

@@ -19,7 +19,7 @@ export class UserComponent implements OnInit {
   errorMessage: string;
   isVote = false;
   isVoteFailed = false;
-  sondages;
+  votes;
 
 
   model_title: string;
@@ -95,9 +95,10 @@ export class UserComponent implements OnInit {
   }
 
   private getSondages() {
-    this.userService.getRessources("/api/sondage/find")
+    this.userService.getRessources("/api/vote/find/" + this.tokenStorage.getUsername())
       .subscribe(data=>{
-        this.sondages = data;
+        this.votes = data;
+        console.log(this.votes);
       },err=>{
         console.log(err);
       })

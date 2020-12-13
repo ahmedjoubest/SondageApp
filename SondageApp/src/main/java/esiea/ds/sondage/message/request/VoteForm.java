@@ -9,6 +9,7 @@ public class VoteForm {
     @NotBlank
     @Size(min = 3, max = 50)
     private Long sondage;
+    private String sondageTitre;
 
     @NotBlank
     @Size(min = 3, max = 50)
@@ -16,6 +17,14 @@ public class VoteForm {
     
     private String date;
     private String lieu;
+
+    public VoteForm(@NotBlank @Size(min = 3, max = 50) Long sondage, String sondageTitre, @NotBlank @Size(min = 3, max = 50) String user, String date, String lieu) {
+        this.sondage = sondage;
+        this.sondageTitre = sondageTitre;
+        this.user = user;
+        this.date = date;
+        this.lieu = lieu;
+    }
 
     public Long getSondage() {
         return sondage;
@@ -47,6 +56,14 @@ public class VoteForm {
 
     public void setLieu(String lieu) {
         this.lieu = lieu;
+    }
+
+    public String getSondageTitre() {
+        return sondageTitre;
+    }
+
+    public void setSondageTitre(String sondageTitre) {
+        this.sondageTitre = sondageTitre;
     }
 
     @Override
