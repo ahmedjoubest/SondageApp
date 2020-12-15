@@ -14,6 +14,7 @@ import { AdminComponent } from './admin/admin.component';
 
 import { httpInterceptorProviders } from './auth/auth-interceptor';
 import {ConfirmationPopoverModule} from 'angular-confirmation-popover';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 
 @NgModule({
@@ -35,6 +36,7 @@ import {ConfirmationPopoverModule} from 'angular-confirmation-popover';
     ConfirmationPopoverModule.forRoot({
       confirmButtonType: 'danger' // set defaults here
     }),
+    NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

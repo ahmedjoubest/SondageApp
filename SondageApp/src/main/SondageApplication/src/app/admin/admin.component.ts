@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../services/user.service';
-import {SondageInfo} from '../services/sondage-info';
+import {SignUpInfo} from '../auth/signup-info';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import {el} from '@angular/platform-browser/testing/src/browser_util';
 
@@ -10,157 +10,108 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
   styleUrls: ['./admin.component.css']
 })
 export class AdminComponent implements OnInit {
+  mode = "-1";
+  dropdownList = [];
+  selectedItems = [];
+  dropdownSettings = {};
+
+  onItemSelect(item: any) {
+    console.log(item);
+  }
+  onSelectAll(items: any) {
+    console.log(items);
+  }
+
   form: FormGroup;
-  sondageInfo: SondageInfo;
+  user: SignUpInfo;
   board: string;
   errorMessage: string;
-  isSondage = false;
-  isSondageFailed = false;
-  sondages;
-  private lieuxNoms: string[] = [];
-  private datesNoms: string[] = [];
+  isUser = false;
+  isUserFailed = false;
+  users;
 
-  public popoverTitle: string = 'Supprimer sondage';
-  public popoverMessage: string = 'êtes-vous sûr de vouloir supprimer ce sondage';
+  public popoverTitle: string = 'Supprimer utilisateur';
+  public popoverMessage: string = 'êtes-vous sûr de vouloir supprimer cet utilisateur';
   model_title: string;
   edit : boolean = false;
-  private formLieux: FormArray;
-  private formDates: FormArray;
 
   constructor(private userService: UserService,private fb: FormBuilder) { }
 
   ngOnInit() {
-    /* Initiate the form structure */
-    this.nouveauSondage();
-
-    this.getSondages();
-  }
-
-  get lieux() {
-    return this.form.get('lieux') as FormArray;
-  }
-
-  get dates() {
-    return this.form.get('dates') as FormArray;
-  }
-
-  addLieu(l = '') {
-    this.lieux.push(this.fb.group({lieu:l}));
-  }
-
-  addDate() {
-    this.dates.push(this.fb.group({date:''}));
-  }
-
-  deleteLieu(index) {
-    this.lieux.removeAt(index);
-  }
-
-  deleteDate(index) {
-    this.dates.removeAt(index);
+    this.dropdownList = ["admin","user"];
+    this.dropdownSettings = {
+      singleSelection: false,
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      itemsShowLimit: 2,
+      allowSearchFilter: true
+    };
+    this.getUsers();
   }
 
   onSubmit() {
     console.log(this.form);
 
-    this.lieuxNoms = [];
-    this.form.value.lieux.forEach(l=>{
-      this.lieuxNoms.push(l.lieu);
-    })
-
-    this.datesNoms = [];
-    this.form.value.dates.forEach(l=>{
-      this.datesNoms.push(l.date);
-    })
-
-    this.sondageInfo = new SondageInfo(
-      this.form.value.id,
-      this.form.value.titre,
-      this.form.value.description,
-      this.lieuxNoms,
-      this.datesNoms);
-
-    if(!this.edit){
-      this.userService.createRessources("/api/sondage/add",this.sondageInfo).subscribe(
-        data => {
-          console.log(data);
-          this.isSondage = true;
-          this.isSondageFailed = false;
-          this.getSondages();
-        },
-        error => {
-          console.log(error);
-          this.errorMessage = error.error.message;
-          this.isSondageFailed = true;
-        }
-      );
-    }
-    else {
-      this.userService.updateRessources("/api/sondage/update/"+this.sondageInfo.id,this.sondageInfo)
-        .subscribe( data => {
-            console.log(data);
-            this.isSondage = true;
-            this.isSondageFailed = false;
-            this.getSondages();
-          },
-          error => {
-            console.log(error);
-            this.errorMessage = error.error.message;
-            this.isSondageFailed = true;
-          });
-    }
 
   }
 
-  editSondage(sondage: SondageInfo) {
-    this.model_title = "Modifier le sondage " + sondage.id;
-    this.edit = true;
-
-    this.formLieux = this.fb.array([]);
-    sondage.lieux.forEach(l=>{
-      this.formLieux.push(this.fb.group({lieu:l}));
-    })
-
-    this.formDates = this.fb.array([]);
-    sondage.dates.forEach(l=>{
-      this.formDates.push(this.fb.group({date:l}));
-    })
-
-    this.form = this.fb.group({
-      id : [sondage.id],
-      titre: [sondage.titre],
-      description: [sondage.description],
-      lieux: this.formLieux,
-      dates: this.formDates
-    })
-
-  }
-
-  deleteSondage(sondage: SondageInfo) {
-    this.userService.deleteRessources("/api/sondage/delete/"+ sondage.id)
+  deleteUser(user: SignUpInfo) {
+    this.userService.deleteRessources("/api/auth/delete/"+ user.id)
       .subscribe( data => {
-        this.sondages = this.sondages.filter(u => u !== sondage);
+        this.users = this.users.filter(u => u !== user);
       });
   }
 
-  private getSondages() {
-    this.userService.getRessources("/api/sondage/find")
+  private getUsers() {
+    this.userService.getRessources("/api/auth/find")
       .subscribe(data=>{
-        this.sondages = data;
+        this.users = data;
       },err=>{
         console.log(err);
       })
   }
 
-  nouveauSondage() {
-    this.model_title= "Ajouter nouveau sondage";
-    this.edit = false;
+  editUser(user:SignUpInfo,roles): void {
+    this.mode = user.id.toString();
 
-    this.form = this.fb.group({
-      titre: [],
-      description: [],
-      lieux: this.fb.array([this.fb.group({lieu:''})]),
-      dates: this.fb.array([this.fb.group({date:''})])
-    })
+    this.dropdownList = ["admin","user"];
+
+    this.dropdownSettings = {
+      singleSelection: false,
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      itemsShowLimit: 3,
+      allowSearchFilter: true
+    };
+
+    this.selectedItems = [];
+    for (let element of roles) {
+      if(element.name == "ROLE_ADMIN")
+        this.selectedItems.push("admin");
+      else if(element.name == "ROLE_USER")
+        this.selectedItems.push("user");
+    }
+  }
+
+  updateUser(user: any, roles: any[]) {
+    this.mode = "-1";
+    console.log(user);
+    console.log(roles);
+    this.user = new SignUpInfo(
+      user.name,
+      user.username,
+      user.email,
+      user.password,
+      );
+    this.user.role = roles;
+
+    this.userService.updateRessources("/api/auth/update/"+user.id,this.user)
+      .subscribe( data => {
+          console.log(data);
+          this.getUsers();
+        },
+        error => {
+          console.log(error);
+        });
   }
 }

@@ -1,13 +1,15 @@
 package esiea.ds.sondage.controller;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.validation.Valid;
 
+import esiea.ds.sondage.message.request.SondageForm;
+import esiea.ds.sondage.message.request.SignUpForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,6 +48,53 @@ public class AuthRestAPIs {
 
 	@Autowired
     JwtProvider jwtProvider;
+
+	@RequestMapping(value="/find")
+	public List<User> listUsers() {
+		return userRepository.findAll();
+	}
+
+	@RequestMapping(value="/delete/{id}",method = RequestMethod.DELETE)
+	@PreAuthorize("hasRole('ADMIN')")
+	public void delete(@PathVariable("id") Long id) {
+		userRepository.deleteById(id);
+	}
+
+	@RequestMapping(value="/update/{id}",method = RequestMethod.PUT)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Object> updateUser(@RequestBody SignUpForm signUpRequest, @PathVariable long id) {
+		System.out.println("*****ROLES: "+signUpRequest.getRole());
+		Optional<User> userOptional = userRepository.findById(id);
+
+		if (!userOptional.isPresent())
+			return ResponseEntity.notFound().build();
+
+		User user = new User(signUpRequest.getName(),signUpRequest.getUsername(),
+				signUpRequest.getEmail(),signUpRequest.getPassword());
+
+		user.setId(id);
+
+		Set<Role> roles = new HashSet<>();
+		signUpRequest.getRole().forEach(role -> {
+			switch (role) {
+				case "admin":
+					Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN).orElse(null);
+					roles.add(adminRole);
+
+					break;
+				default:
+					Role recRole = roleRepository.findByName(RoleName.ROLE_USER).orElse(null);
+					roles.add(recRole);
+			}
+		});
+
+		user.setRoles(roles);
+		System.out.println("*****User: "+ user);
+		userRepository.save(user);
+
+		return ResponseEntity.noContent().build();
+	}
+
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginRequest) {
