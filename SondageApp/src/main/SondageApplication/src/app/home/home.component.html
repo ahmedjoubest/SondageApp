@@ -1,11 +1,200 @@
 <div *ngIf="info.token; else loggedOut">
-  <h5 class="text-primary">Your Information</h5>
-  <p>
-    <strong>Username:</strong> {{info.username}}<br/>
-    <strong>Roles:</strong> {{info.authorities}}<br />
-    <strong>Token:</strong> {{info.token}}.
-  </p>
-  <button class="btn btn-secondary" (click)="logout()">Logout</button>
+  <div class="row">
+    <div class="col-md-8">
+      <h4>Liste des Sondages</h4>
+    </div>
+    <div *ngIf="info.authorities == 'ROLE_ADMIN'" class="col-md-4">
+      <a data-toggle="modal" data-target="#BlockComp" class="btn btn-success" (click)="nouveauSondage()">Nouveau Sondage</a>
+    </div>
+  </div>
+
+  <div *ngIf="isSondage && !edit" class="alert alert-success">
+    Le sondage a été créé avec succès!
+  </div>
+  <div *ngIf="isSondage && edit" class="alert alert-success">
+    Le sondage a été modifié avec succès!
+  </div>
+
+  <div class="row">
+    <table>
+      <tr>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Lieux</th>
+        <th>Dates</th>
+        <th>Actions</th>
+      </tr>
+      <tr *ngFor="let sondage of sondages">
+        <td>{{sondage.titre}}</td>
+        <td>{{sondage.description}}</td>
+        <td>
+          <p *ngFor="let lieu of sondage.lieux">
+            {{lieu}}
+          </p>
+        </td>
+        <td>
+          <p *ngFor="let date of sondage.dates">
+            {{date}}
+          </p>
+        </td>
+        <td>
+          <button *ngIf="info.authorities == 'ROLE_ADMIN'" class="btn btn-default btn-rounded btn-sm" data-toggle="modal" data-target="#BlockComp"
+                  (click)="editSondage(sondage)">
+            <span class="fa fa-pencil"></span></button>
+          <button *ngIf="info.authorities == 'ROLE_ADMIN'" class="btn btn-danger btn-rounded btn-sm" mwlConfirmationPopover
+                  [popoverTitle]="popoverTitle" [popoverMessage]="popoverMessage" placement="left"
+                  (confirm)="deleteSondage(sondage)">
+            <span class="fa fa-times"></span>
+          </button>
+          <button *ngIf="info.authorities == 'ROLE_USER'" class="btn btn-default btn-rounded btn-sm" data-toggle="modal" data-target="#BlockVote"
+                  (click)="voteSondage(sondage)">
+            <span class="fa fa-bullhorn"></span>
+          </button>
+          <button *ngIf="info.authorities == 'ROLE_ADMIN'" class="btn btn-default btn-rounded btn-sm" data-toggle="modal" data-target="#BlockVotes"
+                  (click)="votesSondage(sondage)">
+            <span class="fa fa-bullhorn"></span>
+          </button>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+
+  <!-- MODALS -->
+  <div id="BlockComp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="taskEditModalHead"
+       aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+            class="sr-only">Fermer</span></button>
+          <h4 class="modal-title" id="taskEditModalHead">{{model_title}}</h4>
+        </div>
+        <form class="form-horizontal" [formGroup]="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+          <div class="modal-body">
+            <div class="form-group col-md-12">
+              <label for="titre">Titre du Sondage</label>
+              <input type="text" class="form-control" formControlName="titre"required />
+            </div>
+            <div class="form-group col-md-12">
+              <label for="description">Description</label>
+              <input type="text" class="form-control" formControlName="description" required />
+            </div>
+            <div formArrayName="lieux">
+              <label for="lieux">Lieux </label>
+              <button type="button" (click)="deleteLieu(lieuIndex)" class="btn btn-danger btn-rounded btn-sm">
+                <span class="fa fa-minus"></span></button>
+              <button type="button" (click)="addLieu()" class="btn btn-success btn-rounded btn-sm">
+                <span class="fa fa-plus"></span></button>
+              <div *ngFor="let item of lieux.controls; let lieuIndex=index" [formGroupName]="lieuIndex">
+                <label for="lieux">Lieu {{lieuIndex + 1}}</label>
+                <input type="text" class="form-control" formControlName="lieu" required />
+              </div>
+            </div><br>
+            <div formArrayName="dates">
+              <label for="dates">Dates</label>
+              <button type="button" (click)="deleteDate(dateIndex)" class="btn btn-danger btn-rounded btn-sm">
+                <span class="fa fa-minus"></span></button>
+              <button type="button" (click)="addDate()" class="btn btn-success btn-rounded btn-sm">
+                <span class="fa fa-plus"></span></button>
+              <div *ngFor="let item of dates.controls; let dateIndex=index" [formGroupName]="dateIndex">
+                <label for="dates">Date {{dateIndex + 1}}</label>
+                <input type="date" class="form-control" formControlName="date" required />
+              </div>
+            </div><br>
+            <div class="form-group">
+              <div *ngIf="f.submitted && isSondageFailed" class="alert alert-warning">
+                Création sondage a échouée!<br/>{{errorMessage}}
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- END MODALS -->
+
+  <!-- MODALS -->
+  <div id="BlockVote" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="taskEditModalHead"
+       aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+            class="sr-only">Fermer</span></button>
+          <h4 class="modal-title" id="taskEditModalHeadVote">{{model_title}}</h4>
+        </div>
+        <form class="form-horizontal" [formGroup]="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+          <div class="modal-body">
+            <div class="form-group col-md-12">
+              <label for="description">Description</label><br>
+              <label>
+                {{form.value.description}}
+              </label>
+            </div>
+            <div formArrayName="lieux">
+              <label for="lieux">Choisir Lieu</label>
+              <select class="form-control" [formControl]="selectedLieu" required >
+                <option *ngFor="let item of lieux.controls" [value]="item.value.lieu">{{item.value.lieu}}</option>
+              </select>
+            </div><br>
+            <div formArrayName="dates">
+              <label for="dates">Choisir Date</label>
+              <select class="form-control" [formControl]="selectedDate" required>
+                <option *ngFor="let item of dates.controls" [value]="item.value.date">{{item.value.date}}</option>
+              </select>
+            </div><br>
+            <div class="form-group">
+              <div *ngIf="f.submitted && isVoteFailed" class="alert alert-warning">
+                Vote sur le sondage sondage a échoué!<br/>{{errorMessage}}
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- END MODALS -->
+
+  <!-- MODALS -->
+  <div id="BlockVotes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="taskEditModalHead"
+       aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+            class="sr-only">Fermer</span></button>
+          <h4 class="modal-title" id="taskEditModalHeadVotes">Liste des votes pour le sondage <b>{{sondage.titre}}</b></h4>
+        </div>
+        <div class="modal-body">
+          <table>
+            <tr>
+              <th>Utilisateur</th>
+              <th>Lieu</th>
+              <th>Date</th>
+            </tr>
+            <tr *ngFor="let vote of votes">
+              <td>{{vote.user}}</td>
+              <td>{{vote.date}}</td>
+              <td>{{vote.lieu}}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- END MODALS -->
 </div>
 
 <ng-template #loggedOut>

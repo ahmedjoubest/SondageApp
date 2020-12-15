@@ -1,5 +1,7 @@
 package esiea.ds.sondage.controller;
 
+import esiea.ds.sondage.message.request.VoteForm;
+import esiea.ds.sondage.model.Vote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +44,11 @@ public class SondageRestAPIs {
 				lieux.add(l.getNom());
 			});
 			s.setLieux(lieux);
+			Set<VoteForm> votes = new HashSet<>();
+			sondage.getVotes().forEach(l->{
+				votes.add(new VoteForm(l.getSondage().getId(),l.getSondage().getTitre(),l.getUser().getUsername(),l.getDate(),l.getLieu()));
+			});
+			s.setVotes(votes);
 			sondages.add(s);
 		});
 		return sondages;

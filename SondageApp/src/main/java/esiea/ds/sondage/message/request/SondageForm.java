@@ -1,5 +1,7 @@
 package esiea.ds.sondage.message.request;
 
+import esiea.ds.sondage.model.Vote;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -27,6 +29,16 @@ public class SondageForm {
     
     private Set<String> dates;
     private Set<String> lieux;
+
+    public Set<VoteForm> getVotes() {
+        return votes;
+    }
+
+    public void setVotes(Set<VoteForm> votes) {
+        this.votes = votes;
+    }
+
+    private Set<VoteForm> votes;
 
     public String getTitre() {
         return titre;

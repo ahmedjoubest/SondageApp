@@ -20,7 +20,6 @@ public class Sondage {
 	private Set<Lieu> m_Lieu;
 
 	@OneToMany(mappedBy = "sondage", cascade = CascadeType.ALL)
-	@JsonIgnore
 	private Set<Vote> votes;
 
 	public Sondage() {
