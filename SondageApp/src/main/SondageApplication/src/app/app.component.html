@@ -4,21 +4,21 @@
       <a class="navbar-brand" href="#">Sondage</a>
     </div>
     <ul class="nav navbar-nav" routerLinkActive="active">
-      <li class="nav-item"><a class="nav-link" routerLink="home">Home</a></li>
-      <li *ngIf="authority === 'user'" class="nav-item">
-        <a class="nav-link" routerLink="user">User Board</a>
+      <li class="nav-item"><a class="nav-link" routerLink="home">Accueil</a></li>
+      <li *ngIf="roles && roles.includes('ROLE_USER')" class="nav-item">
+        <a class="nav-link" routerLink="user">Mes Votes</a>
       </li>
-      <li *ngIf="authority === 'admin'" class="nav-item">
-        <a class="nav-link" routerLink="admin">Admin Board</a>
+      <li *ngIf="roles && roles.includes('ROLE_ADMIN')" class="nav-item">
+        <a class="nav-link" routerLink="admin">Utilisateurs</a>
       </li>
     </ul>
     <ul *ngIf="authority" class="nav navbar-nav navbar-right">
       <li><a routerLink="profile"><span class="glyphicon glyphicon-user"></span> {{ user }}</a></li>
-      <li><a href="#" (click)="logout()"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+      <li><a href="#" (click)="logout()"><span class="glyphicon glyphicon-log-out"></span> Se déconnecter</a></li>
     </ul>
     <ul *ngIf="!authority" class="nav navbar-nav navbar-right">
-      <li><a routerLink="signup"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-      <li><a routerLink="auth/login"><span class="glyphicon glyphicon-log-in" ></span> Login</a></li>
+      <li><a routerLink="signup"><span class="glyphicon glyphicon-user"></span> S'inscrire</a></li>
+      <li><a routerLink="auth/login"><span class="glyphicon glyphicon-log-in" ></span> S'authentifier</a></li>
     </ul>
   </div>
 </nav>

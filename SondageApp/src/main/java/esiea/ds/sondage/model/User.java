@@ -114,8 +114,6 @@ public class User{
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", roles=" + roles +
-                ", votes=" + votes +
                 '}';
     }
 
