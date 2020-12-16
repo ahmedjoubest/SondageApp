@@ -1,6 +1,5 @@
 package esiea.ds.sondage.controller;
 
-import esiea.ds.sondage.message.request.SondageForm;
 import esiea.ds.sondage.message.request.VoteForm;
 import esiea.ds.sondage.model.DateRendezVous;
 import esiea.ds.sondage.model.Lieu;
@@ -51,9 +50,9 @@ public class VoteRestAPIs {
 		return votes;
 	}
 
-	@RequestMapping(value="/api/sondage/vote", method = RequestMethod.POST)
+	@RequestMapping(value="/api/vote/update", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('USER')")
-	public void voteSondage(@RequestBody VoteForm vote) {
+	public void updateVote(@RequestBody VoteForm vote) {
 		System.out.println(vote);
 
 		Sondage sondage = sondageRepository.findById(vote.getSondage()).orElse(null);
@@ -64,7 +63,28 @@ public class VoteRestAPIs {
 		Vote sd = voteRepository.findByUserAndSondage(user,sondage).orElse(null);
 
 		if(sd != null)
-			return;
+		{
+			sd.setDate(vote.getDate());
+			sd.setLieu(vote.getLieu());
+		}
+
+		voteRepository.save(sd);
+	}
+
+	@RequestMapping(value="/api/sondage/vote", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('USER')")
+	public Vote voteSondage(@RequestBody VoteForm vote) {
+		System.out.println(vote);
+
+		Sondage sondage = sondageRepository.findById(vote.getSondage()).orElse(null);
+
+		User user = userRepository.findByUsername(vote.getUser()).orElse(null);
+
+
+		Vote sd = voteRepository.findByUserAndSondage(user,sondage).orElse(null);
+
+		if(sd != null)
+			return null;
 
 		sd = new Vote();
 		sd.setUser(user);
@@ -74,7 +94,7 @@ public class VoteRestAPIs {
 
 		System.out.println(sd);
 
-		voteRepository.save(sd);
+		 return voteRepository.save(sd);
 	}
 
 }

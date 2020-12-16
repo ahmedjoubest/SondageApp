@@ -18,6 +18,9 @@ public class VoteForm {
     private String date;
     private String lieu;
 
+    public VoteForm() {
+    }
+
     public VoteForm(@NotBlank @Size(min = 3, max = 50) Long sondage, String sondageTitre, @NotBlank @Size(min = 3, max = 50) String user, String date, String lieu) {
         this.sondage = sondage;
         this.sondageTitre = sondageTitre;

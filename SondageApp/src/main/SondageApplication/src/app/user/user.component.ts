@@ -19,7 +19,7 @@ export class UserComponent implements OnInit {
   errorMessage: string;
   isVote = false;
   isVoteFailed = false;
-  votes;
+  votes;sondages;sondage;
 
 
   model_title: string;
@@ -35,6 +35,7 @@ export class UserComponent implements OnInit {
     this.nouveauSondage();
 
     this.getSondages();
+    this.getVotes();
 
   }
 
@@ -56,12 +57,12 @@ export class UserComponent implements OnInit {
 
     console.log(this.voteInfo);
 
-      this.userService.createRessources("/api/sondage/vote",this.voteInfo)
+      this.userService.createRessources("/api/vote/update",this.voteInfo)
         .subscribe( data => {
             console.log(data);
             this.isVote = true;
             this.isVoteFailed = false;
-            this.getSondages();
+            this.getVotes();
           },
           error => {
             console.log(error);
@@ -71,30 +72,34 @@ export class UserComponent implements OnInit {
 
   }
 
-  voteSondage(sondage: SondageInfo) {
-    this.model_title = "Voter sur le sondage " + sondage.titre;
+  voteSondage(vote: VoteInfo) {
+    this.sondage = this.sondages.find(u => u.id == vote.sondage);
+    this.selectedLieu= new FormControl(vote.lieu);
+    this.selectedDate= new FormControl(vote.date);
+
+    this.model_title = "modifier Votre vote sur le sondage " + this.sondage.titre;
 
     this.formLieux = this.fb.array([]);
-    sondage.lieux.forEach(l=>{
+    this.sondage.lieux.forEach(l=>{
       this.formLieux.push(this.fb.group({lieu:l}));
     })
 
     this.formDates = this.fb.array([]);
-    sondage.dates.forEach(l=>{
+    this.sondage.dates.forEach(l=>{
       this.formDates.push(this.fb.group({date:l}));
     })
 
     this.form = this.fb.group({
-      id : [sondage.id],
-      titre: [sondage.titre],
-      description: [sondage.description],
+      id : [this.sondage.id],
+      titre: [this.sondage.titre],
+      description: [this.sondage.description],
       lieux: this.formLieux,
       dates: this.formDates
     })
 
   }
 
-  private getSondages() {
+  private getVotes() {
     this.userService.getRessources("/api/vote/find/" + this.tokenStorage.getUsername())
       .subscribe(data=>{
         this.votes = data;
@@ -113,6 +118,15 @@ export class UserComponent implements OnInit {
       lieux: this.fb.array([this.fb.group({lieu:''})]),
       dates: this.fb.array([this.fb.group({date:''})])
     })
+  }
+
+  private getSondages() {
+    this.userService.getRessources("/api/sondage/find")
+      .subscribe(data=>{
+        this.sondages = data;
+      },err=>{
+        console.log(err);
+      })
   }
 
 }
