@@ -95,6 +95,7 @@ export class AdminComponent implements OnInit {
 
   updateUser(user: any, roles: any[]) {
     this.mode = "-1";
+    this.edit = true;
     console.log(user);
     console.log(roles);
     this.user = new SignUpInfo(
@@ -108,6 +109,8 @@ export class AdminComponent implements OnInit {
     this.userService.updateRessources("/api/auth/update/"+user.id,this.user)
       .subscribe( data => {
           console.log(data);
+          this.isUser = true;
+          this.isUserFailed = false;
           this.getUsers();
         },
         error => {

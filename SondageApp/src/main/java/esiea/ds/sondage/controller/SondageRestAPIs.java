@@ -112,6 +112,10 @@ public class SondageRestAPIs {
 
 		Sondage newSondage = sondageRepository.save(sd);
 
+		dateRendezVousRepository.findAll().forEach(dateRendezVous -> {
+			if(dateRendezVous.getSondage().getId() == id && !sondage.getDates().contains(dateRendezVous.getDate()))
+				dateRendezVousRepository.delete(dateRendezVous);
+		});
 		sondage.getDates().forEach(d->{
 			DateRendezVous newDate = new DateRendezVous();
 			newDate.setDate(d);
@@ -119,6 +123,10 @@ public class SondageRestAPIs {
 			dateRendezVousRepository.save(newDate);
 		});
 
+		lieuRepository.findAll().forEach(lieu -> {
+			if(lieu.getSondage().getId() == id && !sondage.getLieux().contains(lieu.getNom()))
+				lieuRepository.delete(lieu);
+		});
 		sondage.getLieux().forEach(l->{
 			Lieu newLieu = new Lieu();
 			newLieu.setNom(l);
