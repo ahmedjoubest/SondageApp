@@ -22,7 +22,8 @@ export class HomeComponent implements OnInit {
   isVoteFailed = false;
   isSondage = false;
   isSondageFailed = false;
-  sondages;votes;sondage;
+  sondages;votes;
+  sondage = new SondageInfo(0,"","",[],[]);
   private lieuxNoms: string[] = [];
   private datesNoms: string[] = [];
 
@@ -121,8 +122,15 @@ export class HomeComponent implements OnInit {
       this.userService.createRessources("/api/sondage/vote",this.voteInfo)
         .subscribe( data => {
             console.log(data);
-            this.isVote = true;
-            this.isVoteFailed = false;
+            if(data != null){
+              this.isVote = true;
+              this.isVoteFailed = false;
+            }
+            else{
+              this.isVote = false;
+              this.isVoteFailed = true;
+            }
+
             this.getSondages();
           },
           error => {
@@ -228,4 +236,7 @@ export class HomeComponent implements OnInit {
     this.sondage = sondage;
     this.votes = sondage.votes;
   }
+
+
 }
+

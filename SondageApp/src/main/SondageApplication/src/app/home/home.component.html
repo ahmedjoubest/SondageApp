@@ -8,11 +8,23 @@
     </div>
   </div>
 
-  <div *ngIf="isSondage && !edit" class="alert alert-success">
+  <div *ngIf="isSondage && !edit" class="alert alert-successalert-dismissible">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
     Le sondage a été créé avec succès!
   </div>
-  <div *ngIf="isSondage && edit" class="alert alert-success">
+  <div *ngIf="isSondage && edit" class="alert alert-success alert-dismissible">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
     Le sondage a été modifié avec succès!
+  </div>
+
+  <div *ngIf="isVote" class="alert alert-successalert-dismissible">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    Votre vote a été enregitré avec succès!
+  </div>
+
+  <div *ngIf="isVoteFailed" class="alert alert-dangeralert-dismissible">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    Vous avez déjà voté à ce sondage!
   </div>
 
   <div class="row">
@@ -38,21 +50,21 @@
           </p>
         </td>
         <td>
-          <button *ngIf="info.authorities == 'ROLE_ADMIN'" class="btn btn-default btn-rounded btn-sm" data-toggle="modal" data-target="#BlockComp"
+          <button *ngIf="info.authorities.includes('ROLE_ADMIN')" class="btn btn-default btn-rounded btn-sm" data-toggle="modal" data-target="#BlockComp"
                   (click)="editSondage(sondage)">
             <span class="fa fa-pencil"></span></button>
-          <button *ngIf="info.authorities == 'ROLE_ADMIN'" class="btn btn-danger btn-rounded btn-sm" mwlConfirmationPopover
+          <button *ngIf="info.authorities.includes('ROLE_ADMIN')" class="btn btn-danger btn-rounded btn-sm" mwlConfirmationPopover
                   [popoverTitle]="popoverTitle" [popoverMessage]="popoverMessage" placement="left"
                   (confirm)="deleteSondage(sondage)">
             <span class="fa fa-times"></span>
           </button>
-          <button *ngIf="info.authorities == 'ROLE_USER'" class="btn btn-default btn-rounded btn-sm" data-toggle="modal" data-target="#BlockVote"
+          <button *ngIf="info.authorities.includes('ROLE_USER')" class="btn btn-default btn-rounded btn-sm" data-toggle="modal" data-target="#BlockVote"
                   (click)="voteSondage(sondage)">
             <span class="fa fa-bullhorn"></span>
           </button>
-          <button *ngIf="info.authorities == 'ROLE_ADMIN'" class="btn btn-default btn-rounded btn-sm" data-toggle="modal" data-target="#BlockVotes"
+          <button *ngIf="info.authorities.includes('ROLE_ADMIN')" class="btn btn-default btn-rounded btn-sm" data-toggle="modal" data-target="#BlockVotes"
                   (click)="votesSondage(sondage)">
-            <span class="fa fa-bullhorn"></span>
+            <span class="fa fa-th-list"></span>
           </button>
         </td>
       </tr>
@@ -198,5 +210,5 @@
 </div>
 
 <ng-template #loggedOut>
-  Please login.
+  Veuillez vous connecter.
 </ng-template>
