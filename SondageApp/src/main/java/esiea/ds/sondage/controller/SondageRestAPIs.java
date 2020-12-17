@@ -1,7 +1,6 @@
 package esiea.ds.sondage.controller;
 
 import esiea.ds.sondage.message.request.VoteForm;
-import esiea.ds.sondage.model.Vote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +13,7 @@ import esiea.ds.sondage.repository.LieuRepository;
 import esiea.ds.sondage.repository.SondageRepository;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -35,15 +35,36 @@ public class SondageRestAPIs {
 			s.setTitre(sondage.getTitre());
 			s.setDescription(sondage.getDescription());
 			Set<String> dates = new HashSet<>();
+			List<Integer> datesVote = new ArrayList<>();
 			sondage.getM_Date().forEach(d -> {
 				dates.add(d.getDate());
 			});
+			dates.forEach(d->{
+				AtomicInteger nbr = new AtomicInteger(0);
+				if(sondage.getVotes() != null)
+					sondage.getVotes().forEach(v->{
+						if(v.getDate().equals(d))
+							nbr.getAndIncrement();
+					});
+				datesVote.add(new Integer(String.valueOf(nbr)));
+			});
 			s.setDates(dates);
+			s.setDatesNbr(datesVote);
 			Set<String> lieux = new HashSet<>();
+			List<Integer> lieuxVote = new ArrayList<>();
 			sondage.getM_Lieu().forEach(l->{
 				lieux.add(l.getNom());
 			});
+			lieux.forEach(l->{
+				AtomicInteger nbr = new AtomicInteger(0);
+				sondage.getVotes().forEach(v->{
+					if(v.getLieu().equals(l))
+						nbr.getAndIncrement();
+				});
+				lieuxVote.add(new Integer(String.valueOf(nbr)));
+			});
 			s.setLieux(lieux);
+			s.setLieuxNbr(lieuxVote);
 			Set<VoteForm> votes = new HashSet<>();
 			sondage.getVotes().forEach(l->{
 				votes.add(new VoteForm(l.getSondage().getId(),l.getSondage().getTitre(),l.getUser().getUsername(),l.getDate(),l.getLieu()));

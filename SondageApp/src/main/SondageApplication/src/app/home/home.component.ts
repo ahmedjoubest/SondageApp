@@ -5,6 +5,7 @@ import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {SondageInfo} from "../services/sondage-info";
 import {UserService} from "../services/user.service";
 import {VoteInfo} from "../services/vote-info";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-home',
@@ -191,6 +192,22 @@ export class HomeComponent implements OnInit {
     this.userService.getRessources("/api/sondage/find")
       .subscribe(data=>{
         this.sondages = data;
+        this.sondages.forEach(s=>{
+          s.lieuMax = 0;
+          s.lieuxNbr.forEach(l=>{
+            if(l > s.lieuMax)
+              s.lieuMax = l;
+          })
+        })
+
+        this.sondages.forEach(s=>{
+          s.dateMax = 0;
+          s.datesNbr.forEach(l=>{
+            if(l > s.dateMax)
+              s.dateMax = l;
+          })
+        })
+
       },err=>{
         console.log(err);
       })

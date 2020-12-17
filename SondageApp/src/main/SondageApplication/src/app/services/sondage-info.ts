@@ -8,6 +8,12 @@ export class SondageInfo {
     description: string;
     dates: string[];
     lieux: string[];
+    datesNbr: number[];
+    lieuxNbr: number[];
+    dateMax: number[];
+    lieuMax: number[];
+
+
     votes: VoteInfo[];
 
     constructor(id:number, titre: string, description: string, lieux: string[] = [], dates: string[] = []) {

@@ -5,6 +5,7 @@ import esiea.ds.sondage.model.Vote;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.List;
 import java.util.Set;
 
 public class SondageForm {
@@ -29,6 +30,25 @@ public class SondageForm {
     
     private Set<String> dates;
     private Set<String> lieux;
+
+    private List<Integer> datesNbr;
+    private List<Integer> lieuxNbr;
+
+    public List<Integer> getDatesNbr() {
+        return datesNbr;
+    }
+
+    public void setDatesNbr(List<Integer> datesNbr) {
+        this.datesNbr = datesNbr;
+    }
+
+    public List<Integer> getLieuxNbr() {
+        return lieuxNbr;
+    }
+
+    public void setLieuxNbr(List<Integer> lieuxNbr) {
+        this.lieuxNbr = lieuxNbr;
+    }
 
     public Set<VoteForm> getVotes() {
         return votes;
